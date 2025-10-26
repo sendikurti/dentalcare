@@ -1,15 +1,17 @@
 <?php
 require_once 'inc/auth.php';
 require_once 'inc/db.php';
-// Kontrollo nëse përdoruesi është i kyçur
+
+// Kontrollo nese perdoruesi eshte i kycur
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
 $msg = '';
+
 if (isset($_POST['book'])) {
-    // Merr të dhënat nga forma
+    // Merr te dhenat nga forma
     $name = $_POST['name'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
@@ -18,16 +20,30 @@ if (isset($_POST['book'])) {
     $time = $_POST['time'];
     $message = $_POST['message'];
 
-    // Përgatit query-n për insert
-    $sql = "INSERT INTO appointments (name, email, phone, service, appointment_date, appointment_time, message) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    // Fillon transaksioni
+    $conn->begin_transaction();
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssss", $name, $email, $phone, $service, $date, $time, $message);
+    try {
+        // Pergatit query-n per insert
+        $sql = "INSERT INTO appointments (name, email, phone, service, appointment_date, appointment_time, message)
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssssss", $name, $email, $phone, $service, $date, $time, $message);
+        $stmt->execute();
 
-    if ($stmt->execute()) {
-        echo "Appointment booked successfully!";
-    } else {
-        echo "Error: " . $stmt->error;
+        // (Opsionale) Mund te shtosh nje query tjeter ketu p.sh. per te perditesuar disponueshmerine
+        // $update = $conn->prepare("UPDATE dentist_schedule SET available = 0 WHERE date = ? AND time = ?");
+        // $update->bind_param("ss", $date, $time);
+        // $update->execute();
+
+        // Nese gjithcka shkon mire, ruaj ndryshimet
+        $conn->commit();
+        $msg = "Appointment booked successfully!";
+
+    } catch (Exception $e) {
+        // Nese ndodh ndonje gabim, kthehu mbrapa
+        $conn->rollback();
+        $msg = "Error booking appointment: " . $e->getMessage();
     }
 }
 ?>
@@ -79,6 +95,9 @@ if (isset($_POST['book'])) {
         <div class="col-md-7">
           <div class="card shadow-sm p-4">
             <h3 class="text-center mb-4">Book Your Appointment</h3>
+            <?php if (!empty($msg)): ?>
+              <div class="alert alert-info text-center"><?php echo $msg; ?></div>
+            <?php endif; ?>
             <form method="POST" action="book.php">
               <div class="row">
                 <div class="col-md-6 mb-3">

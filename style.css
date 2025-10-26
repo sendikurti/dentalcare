@@ -1,0 +1,67 @@
+header {
+    background-image: url('../images/background2.jpg');
+    background-size: cover; /* mbulon gjithë headerin */
+    background-position: center; /* e vendos në qendër */
+    background-repeat: no-repeat; /* pa përsëritje */
+    color: white;
+    position: relative;
+    background-attachment: fixed; /* Kjo bën efektin parallax */
+    min-height: 800px; /* rrit lartësinë e headerit */
+    display: flex; /* për të qendruar në mes tekstin */
+    align-items: center; /* vertikalisht në qendër */
+    justify-content: center; /* horizontalisht në qendër */
+    text-align: center;
+}
+
+header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4); /* pak më pak “veshje” */
+    z-index: 0;
+}
+
+header > .container {
+    position: relative;
+    z-index: 1;
+}
+header .container img {
+    max-height: 60px; /* ose si do ti */
+}
+
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Optional: Delay for staggered effect */
+.fade-in-delay-1 {
+    animation-delay: 0.3s;
+}
+
+.fade-in-delay-2 {
+    animation-delay: 0.6s;
+}
+
+.fade-in-delay-3 {
+    animation-delay: 0.9s;
+}
+
+/* Hover effect for service icons or cards */
+.card:hover,
+.service-box:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+}
