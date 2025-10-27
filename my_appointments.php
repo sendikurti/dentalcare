@@ -2,7 +2,7 @@
 session_start();
 require_once 'inc/db.php';
 
-// Kontrollo nëse përdoruesi është i kyçur
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Merr terminet nga databaza
+
 $stmt = $pdo->prepare("SELECT appointment_date, appointment_time, created_at FROM appointments WHERE user_id = ? ORDER BY appointment_date ASC, appointment_time ASC");
 $stmt->execute([$user_id]);
 $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);

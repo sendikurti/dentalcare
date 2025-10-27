@@ -1,3 +1,9 @@
+<?php
+session_start();
+require_once 'inc/db.php'; 
+
+$isLoggedIn = isset($_SESSION['user_id']);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,24 +17,28 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
   <div class="container">
-     <img src="assets/images/logo.png" alt="DentalCare Logo" style="height: 50px;" />
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
+    <img src="assets/images/logo.png" alt="DentalCare Logo" style="height: 50px;" />
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="dashboard.php">Appointments</a></li>
+        <li class="nav-item">
+          <?php if ($isLoggedIn): ?>
+            <a class="nav-link" href="dashboard.php">Appointments</a>
+          <?php else: ?>
+            <a class="nav-link" href="login.php">Appointments</a>
+          <?php endif; ?>
+        </li>
         <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
         <li class="nav-item"><a class="nav-link" href="register.php">Register</a></li>
-        <li class="nav-item"><a class="nav-link" href="book.php">Book Appointment</a></li>
+        <li class="nav-item">
+          <?php if ($isLoggedIn): ?>
+            <a class="nav-link" href="book.php">Book Appointment</a>
+          <?php else: ?>
+            <a class="nav-link" href="login.php">Book Appointment</a>
+          <?php endif; ?>
+        </li>
       </ul>
     </div>
   </div>
@@ -38,11 +48,14 @@
   <div class="container">
     <h1 class="fade-in">Welcome to DentalCare Clinic</h1>
     <p class="fade-in">Your smile is our priority</p>
-    <a href="book.php" class="btn btn-lg btn-light mt-3 fade-in">Book Now</a>
+    <?php if ($isLoggedIn): ?>
+      <a href="book.php" class="btn btn-lg btn-light mt-3 fade-in">Book Now</a>
+    <?php else: ?>
+      <a href="login.php" class="btn btn-lg btn-light mt-3 fade-in">Book Now</a>
+    <?php endif; ?>
   </div>
 </header>
 
-<!-- SERVICES SECTION -->
 <section class="py-5 fade-in-on-scroll">
   <div class="container">
     <h2 class="text-center mb-4">Our Services</h2>
@@ -71,7 +84,6 @@
   </div>
 </section>
 
-<!-- DOCTORS SECTION -->
 <section class="py-5 bg-light">
   <div class="container">
     <h2 class="text-center mb-4">Meet Our Doctors</h2>
@@ -88,13 +100,13 @@
       </div>
       <div class="col-md-4 text-center">
         <img src="assets/images/docpic3.jpeg" class="rounded-circle mb-3" alt="Doctor" width="150" height="150">
-        <h5>Dr. laura bianchi</h5>
+        <h5>Dr. Laura Bianchi</h5>
         <p class="text-muted">Cosmetic Dentist</p>
       </div>
     </div>
   </div>
 </section>
-<!-- WHY CHOOSE US SECTION -->
+
 <section class="container mb-5 fade-in">
   <div class="row text-center">
     <div class="col-md-4 mb-4">

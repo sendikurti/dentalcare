@@ -1,17 +1,15 @@
 <?php
-require_once 'inc/auth.php';
-require_once 'inc/db.php';
+session_start();
+require_once 'inc/db.php'; 
 
-// Kontrollo nese perdoruesi eshte i kycur
+
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header('Location: login.php');
     exit;
 }
-
 $msg = '';
 
 if (isset($_POST['book'])) {
-    // Merr te dhenat nga forma
     $name = $_POST['name'];
     $email = $_POST['email'];
     $phone = $_POST['phone'];
@@ -20,29 +18,18 @@ if (isset($_POST['book'])) {
     $time = $_POST['time'];
     $message = $_POST['message'];
 
-    // Fillon transaksioni
-    $conn->begin_transaction();
-
     try {
-        // Pergatit query-n per insert
+        $pdo->beginTransaction();
         $sql = "INSERT INTO appointments (name, email, phone, service, appointment_date, appointment_time, message)
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssss", $name, $email, $phone, $service, $date, $time, $message);
-        $stmt->execute();
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$name, $email, $phone, $service, $date, $time, $message]);
 
-        // (Opsionale) Mund te shtosh nje query tjeter ketu p.sh. per te perditesuar disponueshmerine
-        // $update = $conn->prepare("UPDATE dentist_schedule SET available = 0 WHERE date = ? AND time = ?");
-        // $update->bind_param("ss", $date, $time);
-        // $update->execute();
-
-        // Nese gjithcka shkon mire, ruaj ndryshimet
-        $conn->commit();
+        
+        $pdo->commit();
         $msg = "Appointment booked successfully!";
-
     } catch (Exception $e) {
-        // Nese ndodh ndonje gabim, kthehu mbrapa
-        $conn->rollback();
+        $pdo->rollBack();
         $msg = "Error booking appointment: " . $e->getMessage();
     }
 }
@@ -59,7 +46,7 @@ if (isset($_POST['book'])) {
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-  <!-- Navbar -->
+ 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="index.php">
@@ -88,7 +75,7 @@ if (isset($_POST['book'])) {
     </div>
   </nav>
 
-  <!-- Book Appointment Section -->
+  
   <section class="py-5" style="background-color: #f0f2f5;">
     <div class="container">
       <div class="row justify-content-center">
@@ -143,7 +130,7 @@ if (isset($_POST['book'])) {
     </div>
   </section>
 
-  <!-- Footer -->
+  
   <footer class="bg-dark text-white text-center py-3 mt-auto">
     <p class="mb-0">&copy; 2025 DentalCare. All rights reserved.</p>
   </footer>

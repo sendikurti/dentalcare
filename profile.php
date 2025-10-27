@@ -1,12 +1,13 @@
 <?php
 session_start();
+require_once 'inc/db.php'; 
+
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    
+    header('Location: login.php');
     exit;
 }
-
-$user_name = $_SESSION['user_name'];
 ?>
 
 <!DOCTYPE html>

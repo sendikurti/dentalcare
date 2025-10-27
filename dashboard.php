@@ -1,14 +1,20 @@
 <?php
-require_once 'inc/auth.php'; // Assumed to contain session_start() and authentication logic
-require_once 'inc/db.php'; // Assumed to load the PDO connection ($pdo)
 
+session_start();              
+require_once 'inc/db.php';     
+require_once 'inc/auth.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
 $user_id = $_SESSION['user_id'];
 
-// 1. Fetch ALL appointments using PDO
-$stmt = $pdo->query("SELECT id, name, email, phone, service, appointment_date, appointment_time, message FROM appointments ORDER BY appointment_date DESC");
+$stmt = $pdo->prepare("SELECT id, name, email, phone, service, appointment_date, appointment_time, message FROM appointments ORDER BY appointment_date DESC");
+$stmt->execute();
 $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch user name (original logic)
+
 $stmt_user = $pdo->prepare("SELECT name FROM users WHERE id = ?");
 $stmt_user->execute([$user_id]);
 $user = $stmt_user->fetch(PDO::FETCH_ASSOC);
@@ -26,7 +32,7 @@ $user_name = $user['name'] ?? 'Admin';
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-  <!-- Navbar -->
+ 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="index.php">
@@ -54,12 +60,12 @@ $user_name = $user['name'] ?? 'Admin';
     </div>
   </nav>
 
-  <!-- Main content -->
+ 
   <section class="py-5 flex-grow-1">
     <div class="container">
       <h2 class="mb-4 text-center">Admin Dashboard - All Appointments</h2>
       
-      <!-- Display Success/Error Messages from Deletion -->
+      
       <?php if (isset($_GET['success'])): ?>
           <div class="alert alert-success text-center"><?= htmlspecialchars($_GET['success']) ?></div>
       <?php endif; ?>
@@ -94,10 +100,10 @@ $user_name = $user['name'] ?? 'Admin';
                   <td><?= htmlspecialchars($row['appointment_date']) ?></td>
                   <td><?= htmlspecialchars($row['appointment_time']) ?></td>
                   <td><?= htmlspecialchars($row['message']) ?></td>
-                  <!-- Action Cell with Delete Form -->
+                  
                   <td>
                     <form action="delete_appoinments.php" method="POST" onsubmit="return confirm('Are you sure you want to delete this appointment?');">
-                        <!-- We need to pass the unique ID of the appointment to the handler -->
+                        
                         <input type="hidden" name="appointment_id" value="<?= $row['id'] ?>">
                         <button type="submit" class="btn btn-danger btn-sm" title="Delete Appointment">
                             <i class="bi bi-trash"></i> Delete
@@ -117,7 +123,7 @@ $user_name = $user['name'] ?? 'Admin';
     </div>
   </section>
 
-  <!-- Footer -->
+  
   <footer class="bg-dark text-white text-center py-3 mt-auto">
     <p class="mb-0">&copy; 2025 DentalCare. All rights reserved.</p>
   </footer>

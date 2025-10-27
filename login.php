@@ -16,11 +16,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION['user_id']   = $user['id'];
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['user_role'] = $user['role'];
-        header("Location: dashboard.php");
+        header("Location: book.php");
         exit;
 
         if ($user['role'] === 'admin') {
-            header("Location: dashboard.php");
+            header("Location: book.php");
         } else {
             header("Location: profile.php");
         }
@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-  <!-- Navbar -->
+ 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="index.php">
@@ -64,16 +64,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="dashboard.php">Appointments</a></li>
           <li class="nav-item"><a class="nav-link" href="book.php">Book</a></li>
-          <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
           <li class="nav-item"><a class="nav-link" href="register.php">Register</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Main content -->
+  
   <section class="py-5" style="background-color: #f0f2f5;">
     <div class="container">
       <div class="row justify-content-center">
@@ -98,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </section>
 
-  <!-- Footer -->
+ 
   <footer class="bg-dark text-white text-center py-3 mt-auto">
     <p class="mb-0">&copy; 2025 DentalCare. All rights reserved.</p>
   </footer>

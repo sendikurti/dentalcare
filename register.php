@@ -1,22 +1,35 @@
 <?php
-require_once 'inc/db.php';
+session_start();
+require_once __DIR__ . '/inc/db.php';
 
 $msg = '';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $name     = $_POST['name'];
-    $email    = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $name     = trim($_POST['name']);
+    $email    = trim($_POST['email']);
+    $password = $_POST['password'];
+    $confirm  = $_POST['confirm_password'];
 
-    try {
-        $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-        $stmt->execute([$name, $email, $password]);
-        $msg = "Registration successful!";
-    } catch (PDOException $e) {
-        $msg = "Error: " . $e->getMessage();
+    if ($password !== $confirm) {
+        $msg = "Passwords do not match!";
+    } else {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        try {
+            $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+            $stmt->execute([$name, $email, $hashedPassword]);
+            $msg = "Registration successful!";
+        } catch (PDOException $e) {
+            if ($e->getCode() == 23000) { // Duplicate entry
+                $msg = "Email already registered!";
+            } else {
+                $msg = "Error: " . $e->getMessage();
+            }
+        }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -29,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-  <!-- Navbar -->
+  
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="index.php">
@@ -49,7 +62,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="dashboard.php">Appointments</a></li>
           <li class="nav-item"><a class="nav-link" href="book.php">Book</a></li>
           <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
           <li class="nav-item"><a class="nav-link active" href="register.php">Register</a></li>
@@ -58,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </nav>
 
-  <!-- Main content -->
+  
   <section class="py-5" style="background-color: #f0f2f5;">
     <div class="container">
       <div class="row justify-content-center">
@@ -91,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </section>
 
-  <!-- Footer -->
+  
   <footer class="bg-dark text-white text-center py-3 mt-auto">
     <p class="mb-0">&copy; 2025 DentalCare. All rights reserved.</p>
   </footer>
